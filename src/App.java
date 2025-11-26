@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,24 +14,28 @@ public class App {
         topPanel.add(btnReset);
         btnReset.addActionListener(e -> {
             // istruzioni per resettare la griglia
+            s.reset();
         });
 
         JButton btnSolution = new JButton("Genera Soluzione");
         topPanel.add(btnSolution);
         btnSolution.addActionListener(e -> {
             // generare una soluzione completa e randomizzata
+            s.generaSoluzione();
         });
 
         JButton btnClue = new JButton("Inizializza");
         topPanel.add(btnClue);
         btnClue.addActionListener(e -> {
             // inizializzare la griglia con solo gli indizi iniziali
+            s.generaIndizi();
         });
 
         JButton btnSolve = new JButton("Risolvi");
         topPanel.add(btnSolve); 
         btnSolve.addActionListener(e -> {
             // risolvere la griglia partendo dagli indizi iniziali
+            s.risolvi();
         });
 
         f.getContentPane().add(topPanel, BorderLayout.NORTH);
