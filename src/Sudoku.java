@@ -4,7 +4,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.Random;
-
 import javax.swing.JPanel;
 
 public class Sudoku extends JPanel {
@@ -29,13 +28,15 @@ public class Sudoku extends JPanel {
      * Metodo per resettare la griglia e svuotare la matrice
      */
     public void reset() {
-
         for (int r = 0; r < tabella.length; r++) {
             for (int c = 0; c < tabella[0].length; c++) {
                 tabella[r][c] = new Cella(r, c);
+                tabella[r][c].setValore(0);
                 soluzione[r][c] = new Cella(r, c);
+                soluzione[r][c].setValore(0);
             }
         }
+        repaint();
     }
 
     /**
@@ -140,8 +141,8 @@ public class Sudoku extends JPanel {
      * e poi risolvere il Sudoku a partire da questa configurazione iniziale
      */
     public void generaSoluzione() {
+        reset(); // svuoto le matrici
         
-
         // 1. Risolvo la prima riga con Fisher-Yates
         int array[] = {1,2,3,4,5,6,7,8,9}; // numeri iniziali
         shuffleArray(array); // mescolo l'array
@@ -151,19 +152,47 @@ public class Sudoku extends JPanel {
 
         // Risolvo di conseguenza
         risolvi();
+        
+        // Salvo la soluzione completa
+        for (int r = 0; r < tabella.length; r++) {
+            for (int c = 0; c < tabella[0].length; c++) {
+                soluzione[r][c].setValore(tabella[r][c].getValore());
+            }
+        }
+        
+        // Svuoto tabella per permettere all'utente di giocare
+        for (int r = 0; r < tabella.length; r++) {
+            for (int c = 0; c < tabella[0].length; c++) {
+                tabella[r][c].setValore(0);
+            }
+        }
+        repaint();
     }
 
     /**
      * Metodo per generare gli indizi iniziali a partire dalla soluzione completa
      */
     public void generaIndizi() {
-
-        for(int i = 0; i < indizi; i++) { // inserisco gli indizi
+        // Svuoto la tabella di gioco
+        for (int r = 0; r < tabella.length; r++) {
+            for (int c = 0; c < tabella[0].length; c++) {
+                tabella[r][c].setValore(0);
+            }
+        }
+        
+        // Inserisco gli indizi casuali dalla soluzione
+        int count = 0;
+        while (count < indizi) {
             int r = rand.nextInt(9); // random riga 
             int c = rand.nextInt(9); // random colonna
-            tabella[r][c].setValore(soluzione[r][c].getValore()); // setto il valore
+            
+            // Aggiungo l'indizio solo se la cella è ancora vuota
+            if (tabella[r][c].getValore() == 0) {
+                tabella[r][c].setValore(soluzione[r][c].getValore());
+                count++;
+            }
         }
-
+        repaint();
     }
 
     /**
