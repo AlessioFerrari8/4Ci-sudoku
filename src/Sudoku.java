@@ -45,9 +45,16 @@ public class Sudoku extends JPanel {
      * @return true se il numero non è presente, false altrimenti
      */
     private boolean isRigaLibera(int riga, int nuovo) {
-
-        // TODO
-        return true;
+        boolean presente = true; // variabile per risultato, di base non è presente
+        // scorro le colonne (la riga è sempre la stessa)
+        for (int c = 0; c < tabella[0].length; c++) {
+            if (tabella[riga][c].getValore() == nuovo) { // se contiene il numero
+                presente = false; // presente
+            }
+        }
+        
+        // ritorno il risultato
+        return presente;
     }
 
     /**
@@ -57,9 +64,16 @@ public class Sudoku extends JPanel {
      * @return true se il numero non è presente, false altrimenti
      */
     private boolean isColonnaLibera(int col, int nuovo) {
+        // stesso ragionamento metodo isRigaLibera
+        boolean presente = true;
+        for (int r = 0; r < tabella.length; r++) {
+            if (tabella[r][col].getValore() == nuovo) {
+                presente = false; 
+            }
+        }
+        
 
-        // TODO
-        return true;
+        return presente;
     }
 
     /**
@@ -70,9 +84,25 @@ public class Sudoku extends JPanel {
      * @return true se il numero non è presente, false altrimenti
      */
     private boolean isRegioneLibera(int riga, int col, int nuovo) {
+        boolean presente = true;
 
-        // TODO
-        return true;
+        // calcolo l'inizio della regione 3x3
+        // per calcolare l'inizio, divido per 3 (dimensione regione) e moltiplico per 3 (per tornare al multiplo di 3 più vicino))
+        // esempio
+        // se riga = 5, 5 / 3 = 1, 1 * 3 = 3 --> inizio regione riga = 3
+        // se col = 7, 7 / 3 = 2, 2 * 3 = 6 --> inizio regione colonna = 6
+        int rigaInizio = (riga / 3) * 3;  
+        int colInizio = (col / 3) * 3; 
+        
+        // scorro la regione 3x3
+        for (int r = rigaInizio; r < rigaInizio + 3; r++) {
+            for (int c = colInizio; c < colInizio + 3; c++) {
+                if (tabella[r][c].getValore() == nuovo) { // controllo
+                    presente = false;
+                }
+            }
+        }
+        return presente;
     }
 
     /**
@@ -111,15 +141,29 @@ public class Sudoku extends JPanel {
      */
     public void generaSoluzione() {
         
-        // TODO
+
+        // 1. Risolvo la prima riga con Fisher-Yates
+        int array[] = {1,2,3,4,5,6,7,8,9}; // numeri iniziali
+        shuffleArray(array); // mescolo l'array
+        for (int c = 0; c < tabella[0].length; c++) { // ciclo per inserire i valori
+            tabella[0][c].setValore(array[c]);
+        }
+
+        // Risolvo di conseguenza
+        risolvi();
     }
 
     /**
      * Metodo per generare gli indizi iniziali a partire dalla soluzione completa
      */
     public void generaIndizi() {
-        
-        // TODO
+
+        for(int i = 0; i < indizi; i++) { // inserisco gli indizi
+            int r = rand.nextInt(9); // random riga 
+            int c = rand.nextInt(9); // random colonna
+            tabella[r][c].setValore(soluzione[r][c].getValore()); // setto il valore
+        }
+
     }
 
     /**
@@ -127,9 +171,17 @@ public class Sudoku extends JPanel {
      * @return la cella vuota trovata, null se non ci sono celle vuote
      */
     private Cella trovaVuota() {
+        Cella vuota = null;
+        for (int r = 0; r < tabella.length; r++) {
+            for (int c = 0; c < tabella[0].length; c++) {
+                if (tabella[r][c].getValore() == 0) {
+                    vuota = tabella[r][c];
+                    return vuota;
+                }
+            }
+        }
 
-        // TODO
-        return null;
+        return vuota;
     }
 
     public boolean risolvi() {
@@ -137,17 +189,30 @@ public class Sudoku extends JPanel {
         Cella vuota = trovaVuota();
 
         // clausola di uscita
-        // TODO
+        if (vuota == null) { // non ci sono più celle vuote
+            return true; // soluzione trovata
+        }
 
         // recupero le coordinate della cella vuota
         int r = vuota.getRiga();
         int c = vuota.getColonna();
 
+
         // provo a inserire i numeri da 1 a 9
-        // se la mossa è valida, eseguo la chiamata ricorsiva
-        // - se true, allora la soluzione è stata trovata
-        // - se false, resetto la cella e provo con il numero successivo (backtracking)
-        // TODO
+        for (int num = 1; num <= 9; num++) {
+            // se la mossa è valida, eseguo la chiamata ricorsiva
+            if (isMossaValida(r, c, num)) {
+                tabella[r][c].setValore(num); // provo la mossa
+                // - se true, allora la soluzione è stata trovata
+                // - se false, resetto la cella e provo con il numero successivo (backtracking)
+
+                if (risolvi()) { // chiamata ricorsiva
+                    return true; // soluzione trovata
+                }
+
+                tabella[r][c].setValore(0); // resetto la cella (backtracking)
+            }
+        }
 
         return false; 
     }
