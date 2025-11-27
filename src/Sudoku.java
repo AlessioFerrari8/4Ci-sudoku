@@ -30,12 +30,13 @@ public class Sudoku extends JPanel {
     public void reset() {
         for (int r = 0; r < tabella.length; r++) {
             for (int c = 0; c < tabella[0].length; c++) {
-                tabella[r][c] = new Cella(r, c);
-                tabella[r][c].setValore(0);
+                tabella[r][c] = new Cella(r, c);  // sovrascrivo un cella vuota
+                tabella[r][c].setValore(0); // nel dubbio metto a 0
                 soluzione[r][c] = new Cella(r, c);
                 soluzione[r][c].setValore(0);
             }
         }
+        // faccio il repaint
         repaint();
     }
 
@@ -143,6 +144,7 @@ public class Sudoku extends JPanel {
     public void generaSoluzione() {
         reset(); // svuoto le matrici
         
+        
         // 1. Risolvo la prima riga con Fisher-Yates
         int array[] = {1,2,3,4,5,6,7,8,9}; // numeri iniziali
         shuffleArray(array); // mescolo l'array
@@ -160,12 +162,14 @@ public class Sudoku extends JPanel {
             }
         }
         
-        // Svuoto tabella per permettere all'utente di giocare
+        // Svuoto tabella 
         for (int r = 0; r < tabella.length; r++) {
             for (int c = 0; c < tabella[0].length; c++) {
                 tabella[r][c].setValore(0);
             }
         }
+
+        // repaint alla fine di tutto
         repaint();
     }
 
@@ -192,6 +196,8 @@ public class Sudoku extends JPanel {
                 count++;
             }
         }
+
+        // repaint alla fine
         repaint();
     }
 
@@ -200,17 +206,17 @@ public class Sudoku extends JPanel {
      * @return la cella vuota trovata, null se non ci sono celle vuote
      */
     private Cella trovaVuota() {
-        Cella vuota = null;
+        Cella vuota = null; // inizializzo una cella 
         for (int r = 0; r < tabella.length; r++) {
-            for (int c = 0; c < tabella[0].length; c++) {
-                if (tabella[r][c].getValore() == 0) {
-                    vuota = tabella[r][c];
-                    return vuota;
+            for (int c = 0; c < tabella[0].length; c++) { // scorro
+                if (tabella[r][c].getValore() == 0) { // se trova una cella vuota, con valore 0
+                    vuota = tabella[r][c]; // salvo l'istanza nella variabile vuota
+                    return vuota; // la ritorno
                 }
             }
         }
 
-        return vuota;
+        return vuota; // se non ci sono, null
     }
 
     public boolean risolvi() {
